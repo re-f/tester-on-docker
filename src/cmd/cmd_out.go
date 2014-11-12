@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func Run(t *testing.T, tc TcFunc) {
+func RunTestCase(t *testing.T, tc TcFunc) {
 	funcPc, _, _, ok := runtime.Caller(1)
 	if !ok {
 		t.Fatalf("get func name and package name error")

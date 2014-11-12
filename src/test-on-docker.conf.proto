@@ -1,0 +1,16 @@
+[ssh]
+user= docker
+passwd=tcuser
+ip= 192.168.59.103
+port=22
+
+[global]
+debug= #true/false
+
+[image]
+os=linux
+arch=amd64
+
+[path]
+host=G:\Virtual Box\
+docker=/Users/

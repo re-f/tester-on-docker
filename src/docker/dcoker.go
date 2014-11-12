@@ -2,6 +2,7 @@ package docker
 
 import (
 	"bytes"
+	"debugLog"
 	"fmt"
 	"io/ioutil"
 	"math/rand"
@@ -12,22 +13,20 @@ import (
 	"testing"
 )
 
-type TcFunc func(t *testing.T)
+func init() {
+}
 
-var (
-	hostPath        = "G:\\Virtual Box\\actiontech-ha"
-	boot2dockerPath = "/Users/actiontech-ha"
-	containerPath   = "/opt"
-)
+type TcFunc func(t *testing.T)
 
 func runContainer(funcName, pkname string) (string, error) {
 	abs, _ := filepath.Abs("./")
 	abs = filepath.ToSlash(abs)
-	hostPath = filepath.ToSlash(hostPath)
-	targetPath := filepath.ToSlash(filepath.Join(strings.Replace(abs, hostPath, boot2dockerPath, 1), pkname+".test"))
+	hostPath := filepath.ToSlash(getHostPath())
+	targetPath := filepath.ToSlash(filepath.Join(strings.Replace(abs, hostPath, getDockerPath(), 1), pkname+".test"))
 
 	// @todo container name
-	runContainer := fmt.Sprintf("sudo docker run -a stdout -i -t --rm=%v -v %v:%v %v %v -test.run=^%v$", true, boot2dockerPath, boot2dockerPath, "ts:base", targetPath, funcName)
+	runContainer := fmt.Sprintf("sudo docker run -a stdout -i -t --rm=%v -v %v:%v:o %v %v -test.run=^%v$", true, getDockerPath(), getDockerPath(), "ts:base", targetPath, funcName)
+	debugLog.Println(runContainer)
 	b, err := execute(runContainer)
 	return b, err
 }
@@ -55,7 +54,6 @@ func compileInnerTestCase(pkname string) error {
 		return fmt.Errorf("compile error: %v", errput.String())
 	}
 	return nil
-
 }
 
 func writeFile(fileName string, lines []string) error {

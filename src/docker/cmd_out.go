@@ -1,6 +1,6 @@
 // +build !inner
 
-package cmd
+package docker
 
 import (
 	"fmt"

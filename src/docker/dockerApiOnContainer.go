@@ -6,6 +6,6 @@ import (
 	"testing"
 )
 
-func RunTestCase(t *testing.T, tc TcFunc) {
+func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 	tc(t)
 }

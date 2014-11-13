@@ -3,6 +3,7 @@
 package docker
 
 import (
+	"bytes"
 	"code.google.com/p/go.crypto/ssh"
 	"fmt"
 )
@@ -22,22 +23,25 @@ var (
 	dockerIns *Ssh
 )
 
-func execute(cmd string) (string, error) {
+func executeOnDocker(cmd string) (string, error) {
 	client, err := getClient()
 	if nil != err {
 		return "", err
 	}
-	// @todo may should mv client.Close() out
 	defer client.Close()
 
 	session, err := client.NewSession()
+
 	if nil != err {
 		return "", err
 	}
 	defer session.Close()
 
-	b, err := session.Output(cmd)
-	return string(b), err
+	var output bytes.Buffer
+	session.Stderr = &output
+	session.Stdout = &output
+
+	return output.String(), session.Run(cmd)
 }
 
 func getClient() (*ssh.ClientConn, error) {
@@ -63,7 +67,7 @@ func getLineEnd() string {
 	return "\r\n"
 }
 func getScriptSuffix() string {
-	return ".bat"
+	return "bat"
 }
 
 func getSsh() *Ssh {

@@ -7,61 +7,44 @@ import (
 	"path/filepath"
 )
 
-func init() {
-	filePath, err := searchConfigFile()
-	if nil != err {
-		panic(err.Error())
-	}
-	file, err = conf.ReadConfigFile(filePath)
-	if nil != err {
-		panic(err.Error())
-	}
-
-}
-
 var (
 	file *conf.ConfigFile
 )
 
 func searchConfigFile() (string, error) {
-	path, err := os.Getwd()
+	curPath, err := os.Getwd()
 	if nil != err {
 		return "", fmt.Errorf("Search config file error: %v", err.Error())
 	}
 
-	isWalkRoot := false
 	confPath := ""
-	findConfig := fmt.Errorf("find config file")
+	findConfigFlag := fmt.Errorf("find config file")
 	for {
-		err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
+		// @todo don't walk
+		err := filepath.Walk(curPath, func(path string, info os.FileInfo, err error) error {
 			if nil != err {
 				return err
 			}
-
-			if info.IsDir() && path != path {
+			if info.IsDir() && path != curPath {
 				return filepath.SkipDir
 			}
 			if info.Name() == "test-on-docker.conf" {
-				confPath = path
-				return findConfig
+				confPath = filepath.Join(curPath, info.Name())
+				return findConfigFlag
 			}
 			return nil
 		})
-		parentPath = filepath.Dir(path)
-		if isWalkRoot {
-			break
-		}
-		if findConfig == err {
+		if findConfigFlag == err {
 			return confPath, nil
 		}
 		if nil != err {
-			return "", err
+			return "", fmt.Errorf("Search config file error", err.Error())
 		}
-
-		// "." or "\"
-		if len(path) == 1 {
-			isWalkRoot = true
+		parentPath := filepath.Dir(curPath)
+		if parentPath == curPath {
+			break
 		}
+		curPath = parentPath
 	}
 	return "", fmt.Errorf("No config file")
 }
@@ -85,4 +68,21 @@ func getHostPath() string {
 
 func getDockerPath() string {
 	return getString("path", "docker")
+}
+
+func isDebug() bool {
+	isDebug, _ := file.GetBool("global", "debug")
+	return isDebug
+}
+func getSections() []string {
+	return file.GetSections()
+
+}
+
+func getImage() image {
+	ins := image{}
+	ins.name = getString("image", "name")
+	ins.os = getString("image", "os")
+	ins.arch = getString("image", "arch")
+	return ins
 }

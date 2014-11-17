@@ -17,6 +17,10 @@ type Ssh struct {
 	passwd string
 }
 
+func (p Ssh) Password(user string) (string, error) {
+	return p.passwd, nil
+}
+
 func init() {
 	dockerIns = getSsh()
 }
@@ -49,7 +53,7 @@ func getClient() (*ssh.ClientConn, error) {
 	config := &ssh.ClientConfig{
 		User: dockerIns.user,
 		Auth: []ssh.ClientAuth{
-			ssh.ClientAuthPassword(password(dockerIns.passwd)),
+			ssh.ClientAuthPassword(dockerIns),
 		},
 	}
 	client, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", dockerIns.ip, dockerIns.port), config)
@@ -57,12 +61,6 @@ func getClient() (*ssh.ClientConn, error) {
 		return nil, fmt.Errorf("unable to dial remote side:%v", err)
 	}
 	return client, nil
-}
-
-type password string
-
-func (p password) Password(user string) (string, error) {
-	return string(p), nil
 }
 
 func newCmd(cmds []string) *exec.Cmd {

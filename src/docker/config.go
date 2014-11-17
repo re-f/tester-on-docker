@@ -2,6 +2,7 @@ package docker
 
 import (
 	"fmt"
+	"github.com/ungerik/go-dry/dry"
 	"goconf/conf"
 	"os"
 	"path/filepath"
@@ -16,29 +17,11 @@ func searchConfigFile() (string, error) {
 	if nil != err {
 		return "", fmt.Errorf("Search config file error: %v", err.Error())
 	}
-
-	confPath := ""
-	findConfigFlag := fmt.Errorf("find config file")
 	for {
-		// @todo don't walk
-		err := filepath.Walk(curPath, func(path string, info os.FileInfo, err error) error {
-			if nil != err {
-				return err
-			}
-			if info.IsDir() && path != curPath {
-				return filepath.SkipDir
-			}
-			if info.Name() == "test-on-docker.conf" {
-				confPath = filepath.Join(curPath, info.Name())
-				return findConfigFlag
-			}
-			return nil
-		})
-		if findConfigFlag == err {
+		confPath := filepath.Join(curPath, "test-on-docker.conf")
+		if dry.FileExists(confPath) {
+			fmt.Println(confPath)
 			return confPath, nil
-		}
-		if nil != err {
-			return "", fmt.Errorf("Search config file error", err.Error())
 		}
 		parentPath := filepath.Dir(curPath)
 		if parentPath == curPath {

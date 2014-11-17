@@ -11,12 +11,14 @@ import (
 	"testing"
 )
 
+// @todo
 func init() {
 	filePath, err := searchConfigFile()
 	if nil != err {
 		panic(err.Error())
 	}
 	file, err = conf.ReadConfigFile(filePath)
+	debugLog("config at %v", filePath)
 	if nil != err {
 		fmt.Println(err.Error())
 		panic(err.Error())
@@ -24,22 +26,29 @@ func init() {
 }
 
 func RunTestCase(t *testing.T, tc func(t *testing.T)) {
-	funcPc, _, _, ok := runtime.Caller(1)
-	if !ok {
-		t.Fatalf("get func name and package name error")
+
+	pkName, funcName, err := getFuncInfo()
+	if nil != err {
+		t.Fatalf(err.Error())
 	}
-	testInfos := strings.Split(runtime.FuncForPC(funcPc).Name(), ".")
-	err := compileInnerTestCase(testInfos[0])
+	err = compileInnerTestCase(pkName)
 	if nil != err {
 		t.Fatalf("complie tc error: " + err.Error())
-		return
 	}
+
+	output, err := runContainer(funcName, filepath.Base(pkName))
 	if nil != err {
-		fmt.Println("after compile err")
+		t.Fatalf("run container error: ,output: %v"+err.Error(), output)
 	}
-	output, err := runContainer(testInfos[1], filepath.Base(testInfos[0]))
-	fmt.Println(output)
-	if nil != err {
-		t.Fatalf("run container error: " + err.Error())
+}
+
+func getFuncInfo() (pkname, funcName string, err error) {
+	funcPc, _, _, ok := runtime.Caller(2)
+	if !ok {
+		return "", "", fmt.Errorf("get func name and package name error")
 	}
+	// funcDesc: pkName.funcName
+	funcDesc := runtime.FuncForPC(funcPc).Name()
+	poitPos := strings.LastIndex(funcDesc, ".") + 1
+	return funcDesc[0 : poitPos-1], funcDesc[poitPos:], nil
 }

@@ -9,8 +9,22 @@ import (
 )
 
 var (
-	file *conf.ConfigFile
+	config *conf.ConfigFile
 )
+
+func LoadConfig() error {
+	filePath, err := searchConfigFile()
+	if nil != err {
+		return fmt.Errorf("Load config error: ", err.Error())
+	}
+
+	config, err = conf.ReadConfigFile(filePath)
+	if nil != err {
+		return fmt.Errorf("Load config error: ", err.Error())
+	}
+	debugLog("config at %v", filePath)
+	return nil
+}
 
 func searchConfigFile() (string, error) {
 	curPath, err := os.Getwd()
@@ -33,7 +47,7 @@ func searchConfigFile() (string, error) {
 }
 
 func getString(section, option string) string {
-	ret, err := file.GetString(section, option)
+	ret, err := config.GetString(section, option)
 	if nil != err {
 		panic(err.Error())
 	}
@@ -54,11 +68,11 @@ func getDockerPath() string {
 }
 
 func isDebug() bool {
-	isDebug, _ := file.GetBool("global", "debug")
+	isDebug, _ := config.GetBool("global", "debug")
 	return isDebug
 }
 func getSections() []string {
-	return file.GetSections()
+	return config.GetSections()
 
 }
 

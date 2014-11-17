@@ -21,14 +21,6 @@ func (p Ssh) Password(user string) (string, error) {
 	return p.passwd, nil
 }
 
-func init() {
-	dockerIns = getSsh()
-}
-
-var (
-	dockerIns *Ssh
-)
-
 func executeOnDocker(cmd string) (string, error) {
 	client, err := getClient()
 	if nil != err {
@@ -51,12 +43,12 @@ func executeOnDocker(cmd string) (string, error) {
 
 func getClient() (*ssh.ClientConn, error) {
 	config := &ssh.ClientConfig{
-		User: dockerIns.user,
+		User: getSsh().user,
 		Auth: []ssh.ClientAuth{
-			ssh.ClientAuthPassword(dockerIns),
+			ssh.ClientAuthPassword(getSsh()),
 		},
 	}
-	client, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", dockerIns.ip, dockerIns.port), config)
+	client, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", getSsh().ip, getSsh().port), config)
 	if nil != err {
 		return nil, fmt.Errorf("unable to dial remote side:%v", err)
 	}

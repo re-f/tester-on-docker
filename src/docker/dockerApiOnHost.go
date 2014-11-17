@@ -4,33 +4,23 @@ package docker
 
 import (
 	"fmt"
-	"goconf/conf"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"testing"
 )
 
-// @todo
-func init() {
-	filePath, err := searchConfigFile()
-	if nil != err {
-		panic(err.Error())
-	}
-	file, err = conf.ReadConfigFile(filePath)
-	debugLog("config at %v", filePath)
-	if nil != err {
-		fmt.Println(err.Error())
-		panic(err.Error())
-	}
-}
-
 func RunTestCase(t *testing.T, tc func(t *testing.T)) {
+	err := LoadConfig()
+	if nil != err {
+		t.Fatalf(err.Error())
+	}
 
 	pkName, funcName, err := getFuncInfo()
 	if nil != err {
 		t.Fatalf(err.Error())
 	}
+
 	err = compileInnerTestCase(pkName)
 	if nil != err {
 		t.Fatalf("complie tc error: " + err.Error())
@@ -38,7 +28,7 @@ func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 
 	output, err := runContainer(funcName, filepath.Base(pkName))
 	if nil != err {
-		t.Fatalf("run container error: ,output: %v"+err.Error(), output)
+		t.Fatalf("run container error: %v, output: %v"+err.Error(), output)
 	}
 }
 

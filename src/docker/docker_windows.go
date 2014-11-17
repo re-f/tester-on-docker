@@ -6,6 +6,8 @@ import (
 	"bytes"
 	"code.google.com/p/go.crypto/ssh"
 	"fmt"
+	"os/exec"
+	"strings"
 )
 
 type Ssh struct {
@@ -62,11 +64,10 @@ type password string
 func (p password) Password(user string) (string, error) {
 	return string(p), nil
 }
-func getLineEnd() string {
-	return "\r\n"
-}
-func getScriptSuffix() string {
-	return "bat"
+
+func newCmd(cmds []string) *exec.Cmd {
+	cmd := strings.Join(cmds, "&")
+	return exec.Command("cmd", "/C", cmd)
 }
 
 func getSsh() *Ssh {

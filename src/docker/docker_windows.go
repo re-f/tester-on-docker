@@ -31,7 +31,6 @@ func executeOnDocker(cmd string) (string, error) {
 	defer client.Close()
 
 	session, err := client.NewSession()
-
 	if nil != err {
 		return "", err
 	}
@@ -40,8 +39,8 @@ func executeOnDocker(cmd string) (string, error) {
 	var output bytes.Buffer
 	session.Stderr = &output
 	session.Stdout = &output
-
-	return output.String(), session.Run(cmd)
+	err = session.Run(cmd)
+	return output.String(), err
 }
 
 func getClient() (*ssh.ClientConn, error) {
@@ -52,7 +51,7 @@ func getClient() (*ssh.ClientConn, error) {
 		},
 	}
 	client, err := ssh.Dial("tcp", fmt.Sprintf("%v:%v", dockerIns.ip, dockerIns.port), config)
-	if err != nil {
+	if nil != err {
 		return nil, fmt.Errorf("unable to dial remote side:%v", err)
 	}
 	return client, nil

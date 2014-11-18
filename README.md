@@ -3,6 +3,10 @@ tester-on-docer
 
 轻量级golang docker单元测试框架
 
+## 说明
+在docker下执行golang单元测试
+
+
 ## 示例
 
 ```Go
@@ -13,8 +17,7 @@ func TestDemo(t *testing.T) {
 }
 ```
 
-## 说明
-框架可在windows/linux/mac使用
+
 
 ### 配置
 
@@ -27,16 +30,20 @@ func TestDemo(t *testing.T) {
 	[global]	# 是否开启debug功能
 	debug	=  #true/false
 
-	[image] 	# 测试使用到的image,os和arch填写参照golang交叉编译相关变量
-	os		= linux
-	arch	= amd64
+	[image] 	# 测试使用到的image,os和arch填写参照golang交叉编译的GOOS和GOARCH变量
+	os		= 
+	arch	= 
 	name	= #格式 REPOSITORY:TAG
 
 	[path] 		# 宿主机和boot2docker文件夹映射路径
-	host	= G:\Virtual Box\
-	docker	= /Users/
+	host	= # 测试执行路径和配置文件必须在该路径下
+	docker	= 
 
 ## 要求
-	docker
-	go 1.3+
-	可交叉编译
+- docker
+- go 1.3+
+- 宿主机可交叉编译
+
+## 限制
+
+暂时不支持benchmark

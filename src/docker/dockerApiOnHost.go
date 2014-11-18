@@ -11,7 +11,7 @@ import (
 )
 
 func RunTestCase(t *testing.T, tc func(t *testing.T)) {
-	err := LoadConfig()
+	err := loadConfig()
 	if nil != err {
 		t.Fatalf(err.Error())
 	}
@@ -28,7 +28,7 @@ func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 
 	output, err := runContainer(funcName, filepath.Base(pkName))
 	if nil != err {
-		t.Fatalf("run container error: %v, output: %v"+err.Error(), output)
+		t.Fatalf("run container error: %v, output: %v", err.Error(), output)
 	}
 }
 

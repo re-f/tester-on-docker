@@ -18,12 +18,18 @@ type image struct {
 var compiledPackages = make([]string, 0)
 
 func runContainer(funcName, pkname string) (string, error) {
-	abs, _ := filepath.Abs("./")
-	abs = filepath.ToSlash(abs)
-	hostPath := filepath.ToSlash(getHostPath())
-	targetPath := filepath.ToSlash(filepath.Join(strings.Replace(abs, hostPath, getDockerPath(), 1), pkname+".test"))
-	containerName := fmt.Sprintf("%v.%v_%v", pkname, funcName, time.Now().UnixNano())
+	/*
+		host path : 	G:/host/path/....
+		run path : 		G:/host/path/src/pkpath
+		docker path : 	/docker/path
+		-> t
+		target path :	/docker/path/src/pkpath
 
+	*/
+	abs, _ := filepath.Abs("./")
+	targetPath := filepath.ToSlash(filepath.Join(strings.Replace(filepath.ToSlash(abs), getHostPath(), getDockerPath(), 1), pkname+".test"))
+
+	containerName := fmt.Sprintf("%v.%v_%v", pkname, funcName, time.Now().UnixNano())
 	runContainerCmd := fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v:o %v %v -test.run=^%v$", containerName, !isDebug(), getDockerPath(), getDockerPath(), getImage().name, targetPath, funcName)
 	debugLog(runContainerCmd)
 	b, err := executeOnDocker(runContainerCmd)

@@ -12,15 +12,15 @@ var (
 	config *conf.ConfigFile
 )
 
-func LoadConfig() error {
+func loadConfig() error {
 	filePath, err := searchConfigFile()
 	if nil != err {
-		return fmt.Errorf("Load config error: ", err.Error())
+		return fmt.Errorf("Load config error: %v", err.Error())
 	}
 
 	config, err = conf.ReadConfigFile(filePath)
 	if nil != err {
-		return fmt.Errorf("Load config error: ", err.Error())
+		return fmt.Errorf("Load config error: %v", err.Error())
 	}
 	debugLog("config at %v", filePath)
 	return nil
@@ -60,7 +60,7 @@ func getString(section, option string) string {
 }
 
 func getHostPath() string {
-	return getString("path", "host")
+	return filepath.ToSlash(getString("path", "host"))
 }
 
 func getDockerPath() string {

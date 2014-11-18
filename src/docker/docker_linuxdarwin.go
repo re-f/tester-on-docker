@@ -7,6 +7,13 @@ import (
 	"strings"
 )
 
+var crossCompileCmds = []string{
+	"CGO_ENABLED=0",
+	"GOOS=" + getImage().os,
+	"GOARCH=" + getImage().arch,
+	"go test -c -tags inner " + pkname,
+}
+
 func executeOnDocker(str string) (string, error) {
 	return execute([]string{str})
 }

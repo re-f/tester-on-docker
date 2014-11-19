@@ -25,7 +25,7 @@ func runContainer(funcName, pkName string,verbose bool) (string, error) {
 		=> 
 		test file path :	/docker/path/src/pkpath
 	*/
-	if !strings.HasPrefix(getHostPath(), getAbs()) {
+	if !strings.HasPrefix(getAbs(),getHostPath() ) {
 		return "",fmt.Errorf("must under host path to run test")
 	}
 	testFileName :=pkName+".test"

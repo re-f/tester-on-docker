@@ -32,7 +32,7 @@ func runContainer(funcName, pkName string,verbose bool) (string, error) {
 	testFilePath := filepath.ToSlash( filepath.Join(strings.Replace(getAbs(), getHostPath(), getBoot2DockerPath(), 1), testFileName))
 
 	containerName := fmt.Sprintf("%v.%v_%v", pkName, funcName, time.Now().UnixNano())
-	runContainerCmd := fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=true -v %v:%v:o %v %v -test.v=%v -test.run=^%v$", containerName,  getBoot2DockerPath(), getBoot2DockerPath(), getImage().name, testFilePath,verbose, funcName)
+	runContainerCmd := fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v:o %v %v -test.v=%v -test.run=^%v$", containerName, !isDebug(), getBoot2DockerPath(), getBoot2DockerPath(), getImage().name, testFilePath,verbose, funcName)
 	debugLog(runContainerCmd)
 	return executeOnDocker(runContainerCmd)
 }

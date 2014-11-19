@@ -34,7 +34,6 @@ func searchConfigFile() (string, error) {
 	for {
 		confPath := filepath.Join(curPath, "test-on-docker.conf")
 		if dry.FileExists(confPath) {
-			fmt.Println(confPath)
 			return confPath, nil
 		}
 		parentPath := filepath.Dir(curPath)
@@ -63,8 +62,8 @@ func getHostPath() string {
 	return filepath.ToSlash(getString("path", "host"))
 }
 
-func getDockerPath() string {
-	return getString("path", "docker")
+func getBoot2DockerPath() string {
+	return filepath.ToSlash(getString("path", "docker"))
 }
 
 func isDebug() bool {

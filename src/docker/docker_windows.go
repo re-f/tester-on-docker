@@ -55,11 +55,19 @@ func getClient() (*ssh.ClientConn, error) {
 	return client, nil
 }
 
-func newCmd(cmds []string) *exec.Cmd {
-	cmd := strings.Join(cmds, "&")
+func newCmd(cmd string) *exec.Cmd {
 	return exec.Command("cmd", "/C", cmd)
 }
 
+func getCrossCompileCmd(pkName, os, arch string) string {
+	cmds := []string{
+		"set CGO_ENABLED=0",
+		"set GOOS=" + os,
+		"set GOARCH=" + arch,
+		"go test -c -tags inner " + pkName,
+	}
+	return strings.Join(cmds, "&")
+}
 func getSsh() *Ssh {
 	ssh := &Ssh{}
 	ssh.ip = getString("ssh", "ip")

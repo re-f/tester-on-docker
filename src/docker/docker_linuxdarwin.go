@@ -7,18 +7,20 @@ import (
 	"strings"
 )
 
-var crossCompileCmds = []string{
-	"CGO_ENABLED=0",
-	"GOOS=" + getImage().os,
-	"GOARCH=" + getImage().arch,
-	"go test -c -tags inner " + pkname,
-}
-
 func executeOnDocker(str string) (string, error) {
-	return execute([]string{str})
+	return execute(str)
 }
 
-func newCmd(cmds []string) *exec.Cmd {
-	cmd := strings.Join(cmds, ";")
+func newCmd(cmd string) *exec.Cmd {
 	return exec.Command("sh", "-c", cmd)
+}
+
+func getCrossCompileCmd(pkName, os, arch string) string {
+	cmds := []string{
+		"CGO_ENABLED=0",
+		"GOOS=" + os,
+		"GOARCH=" + arch,
+		"go test -c -tags inner " + pkName,
+	}
+	return strings.Join(cmds, " ")
 }

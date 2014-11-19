@@ -26,7 +26,10 @@ func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 		t.Fatalf("complie tc error: " + err.Error())
 	}
 
-	output, err := runContainer(funcName, filepath.Base(pkName))
+	output, err := runContainer(funcName, filepath.Base(pkName),testing.Verbose())
+	if testing.Verbose(){
+		fmt.Println(output)
+	}
 	if nil != err {
 		t.Fatalf("run container error: %v, output: %v", err.Error(), output)
 	}

@@ -17,45 +17,44 @@ type image struct {
 
 var compiledPackages = make([]string, 0)
 
-func runContainer(funcName, pkname string) (string, error) {
+func runContainer(funcName, pkName string,verbose bool) (string, error) {
 	/*
 		host path : 	G:/host/path/....
-		run path : 		G:/host/path/src/pkpath
-		docker path : 	/docker/path
-		-> t
-		target path :	/docker/path/src/pkpath
-
+		execution path : 		G:/host/path/src/pkpath
+		boot2docker path : 	/docker/path
+		=> 
+		test file path :	/docker/path/src/pkpath
 	*/
-	abs, _ := filepath.Abs("./")
-	targetPath := filepath.ToSlash(filepath.Join(strings.Replace(filepath.ToSlash(abs), getHostPath(), getDockerPath(), 1), pkname+".test"))
+	if !strings.HasPrefix(getHostPath(), getAbs()) {
+		return "",fmt.Errorf("must under host path to run test")
+	}
+	testFileName :=pkName+".test"
+	testFilePath := filepath.ToSlash( filepath.Join(strings.Replace(getAbs(), getHostPath(), getBoot2DockerPath(), 1), testFileName))
 
-	containerName := fmt.Sprintf("%v.%v_%v", pkname, funcName, time.Now().UnixNano())
-	runContainerCmd := fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v:o %v %v -test.run=^%v$", containerName, !isDebug(), getDockerPath(), getDockerPath(), getImage().name, targetPath, funcName)
+	containerName := fmt.Sprintf("%v.%v_%v", pkName, funcName, time.Now().UnixNano())
+	runContainerCmd := fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=true -v %v:%v:o %v %v -test.v=%v -test.run=^%v$", containerName,  getBoot2DockerPath(), getBoot2DockerPath(), getImage().name, testFilePath,verbose, funcName)
 	debugLog(runContainerCmd)
-	b, err := executeOnDocker(runContainerCmd)
-	return b, err
+	return executeOnDocker(runContainerCmd)
 }
 
-func compileInnerTestCase(pkname string) error {
-	if dry.StringInSlice(pkname, compiledPackages) {
+func getAbs()string {
+	abs, _ := filepath.Abs("./")
+	return filepath.ToSlash(abs)
+}
+
+func compileInnerTestCase(pkName string) error {
+	if dry.StringInSlice(pkName, compiledPackages) {
 		return nil
 	}
-	cmds := []string{
-		"set CGO_ENABLED=0",
-		"set GOOS=" + getImage().os,
-		"set GOARCH=" + getImage().arch,
-		"go test -c -tags inner " + pkname,
-	}
-
-	output, err := execute(cmds)
+	output, err := execute(getCrossCompileCmd(pkName, getImage().os, getImage().arch))
 	if nil != err {
 		return fmt.Errorf("compile test case error: %v ,output: %v", err.Error(), output)
 	}
-	compiledPackages = append(compiledPackages, pkname)
+	compiledPackages = append(compiledPackages, pkName)
 	return nil
 }
 
-func execute(strs []string) (string, error) {
+func execute(strs string) (string, error) {
 	cmd := newCmd(strs)
 	var output bytes.Buffer
 	cmd.Stderr = &output
@@ -66,6 +65,5 @@ func execute(strs []string) (string, error) {
 	if err := cmd.Wait(); nil != err {
 		return output.String(), err
 	}
-
 	return output.String(), nil
 }

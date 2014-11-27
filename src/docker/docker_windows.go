@@ -7,7 +7,6 @@ import (
 	"code.google.com/p/go.crypto/ssh"
 	"fmt"
 	"os/exec"
-	"strings"
 )
 
 type Ssh struct {
@@ -55,18 +54,41 @@ func getClient() (*ssh.ClientConn, error) {
 	return client, nil
 }
 
-func newCmd(cmd string) *exec.Cmd {
-	return exec.Command("cmd", "/C", cmd)
+func newCmd(cmd ...string) *exec.Cmd {
+	c := []string{"/C"}
+	c = append(c, cmd...)
+	return exec.Command("cmd", c...)
 }
 
-func getCrossCompileCmd(pkName, os, arch string) string {
-	cmds := []string{
-		"set CGO_ENABLED=0",
-		"set GOOS=" + os,
-		"set GOARCH=" + arch,
-		"go test -c -tags inner " + pkName,
+func getCrossCompileCmd(pkName, os, arch string, isPrepare bool) []string {
+	/*var prepare string
+	if isPrepare {
+		prepare = " prepare"
+	} else {
+		prepare = ""
+	}*/
+	if isPrepare {
+		cmds := []string{
+			"set", "CGO_ENABLED=0" + "&",
+			"set", "GOOS=" + os + "&",
+			"set", "GOARCH=" + arch + "&",
+			"go", "test", "-c", "-tags", "inner prepare", pkName,
+		}
+		return cmds
+	} else {
+		cmds := []string{
+			"set", "CGO_ENABLED=0" + "&",
+			"set", "GOOS=" + os + "&",
+			"set", "GOARCH=" + arch + "&",
+			"go", "test", "-c", "-tags", "inner", pkName,
+			/*"set CGO_ENABLED=0",
+			"set GOOS=" + os,
+			"set GOARCH=" + arch,
+			fmt.Sprintf("go test -c -tags inner %v", pkName),*/
+		}
+		return cmds
+		// return strings.Join(cmds, "& ")
 	}
-	return strings.Join(cmds, "&")
 }
 func getSsh() *Ssh {
 	ssh := &Ssh{}

@@ -1,12 +1,21 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
-	"path/filepath"
+	"os/exec"
 )
 
 func main() {
-	path := "F:/develop/go/src/tester-on-docker/src"
-	fmt.Println(filepath.ToSlash(path))
 
+	cmd := exec.Command("cmd", "/c", "dir & ping")
+	var output bytes.Buffer
+	cmd.Stdout = &output
+	cmd.Stderr = &output
+	err := cmd.Run()
+	if nil != err {
+		fmt.Println(err.Error())
+	}
+
+	fmt.Println(output.String())
 }

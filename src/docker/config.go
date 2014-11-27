@@ -75,10 +75,10 @@ func getSections() []string {
 
 }
 
-func getImage() image {
-	ins := image{}
-	ins.name = getString("image", "name")
-	ins.os = getString("image", "os")
-	ins.arch = getString("image", "arch")
-	return ins
+func getImage() *Image {
+	ins := Image{}
+	ins.Name = getString("image", "name")
+	ins.Os = getString("image", "os")
+	ins.Arch = getString("image", "arch")
+	return &ins
 }

@@ -72,7 +72,7 @@ func getCrossCompileCmd(pkName, os, arch string, isPrepare bool) []string {
 			"set", "CGO_ENABLED=0" + "&",
 			"set", "GOOS=" + os + "&",
 			"set", "GOARCH=" + arch + "&",
-			"go", "test", "-c", "-tags", "inner prepare", pkName,
+			"go", "test", "-c", "-tags", "container prepare", pkName,
 		}
 		return cmds
 	} else {
@@ -80,7 +80,7 @@ func getCrossCompileCmd(pkName, os, arch string, isPrepare bool) []string {
 			"set", "CGO_ENABLED=0" + "&",
 			"set", "GOOS=" + os + "&",
 			"set", "GOARCH=" + arch + "&",
-			"go", "test", "-c", "-tags", "inner", pkName,
+			"go", "test", "-c", "-tags", "container", pkName,
 			/*"set CGO_ENABLED=0",
 			"set GOOS=" + os,
 			"set GOARCH=" + arch,

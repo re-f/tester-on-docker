@@ -41,21 +41,21 @@ func runContainer(funcName, pkName string, verbose bool, image Image, isRemove, 
 		isRemove = false
 		cidfilePath := filepath.ToSlash(filepath.Join(workDir, containerName))
 		runContainerCmd = fmt.Sprintf("sudo docker run --name=%v --cidfile=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$", containerName, cidfilePath, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, image.Name, testFilePath, verbose, funcName)
-		debugLog(runContainerCmd)
-		output, err := executeOnDocker(runContainerCmd)
+		debugLog("[run docker container]%v", runContainerCmd)
+		prepareOutput, err := executeOnDocker(runContainerCmd)
 		if nil != err {
-			return "", output, err
+			return "", prepareOutput, err
 		}
 		// get cid
-		output, err = executeOnDocker(fmt.Sprintf("cat %v", cidfilePath))
+		output, err := executeOnDocker(fmt.Sprintf("cat %v", cidfilePath))
 		if nil != err {
-			return "", output, err
+			return output, prepareOutput, err
 		} else {
-			return output, output, err
+			return output, prepareOutput, err
 		}
 	} else {
 		runContainerCmd = fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$", containerName, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, image.Name, testFilePath, verbose, funcName)
-		debugLog(runContainerCmd)
+		debugLog("[run docker container]%v", runContainerCmd)
 		output, err := executeOnDocker(runContainerCmd)
 		return "", output, err
 	}
@@ -72,17 +72,25 @@ func getAbs() string {
 }
 
 func compileInnerTestCase(pkName string, image Image, isPrepare bool) error {
-	if dry.StringInSlice(pkName, compiledPackages) {
+	if dry.StringInSlice(pkName, compiledPackages) && !isPrepare {
 		return nil
 	}
 	cmd := getCrossCompileCmd(pkName, image.Os, image.Arch, isPrepare)
 	output, err := execute(cmd...)
-	debugLog("comile testcase :%v \n output:%v", cmd, output)
+	debugLog("[compile]comile testcase :%v \n output:%v", cmd, output)
 	if nil != err {
 		return fmt.Errorf("compile testcase error: %v ,output: %v\n cmd :%v", err.Error(), output, cmd)
 	}
-	compiledPackages = append(compiledPackages, pkName)
+	if !isPrepare {
+		compiledPackages = append(compiledPackages, pkName)
+	}
 	return nil
+}
+
+func buildImage(cid string, image *Image) error {
+
+	_, err := executeOnDocker(fmt.Sprintf("docker  commit -a \"build by tester_on_docker\" -m \"auto\"  %v %v", cid, image.Name))
+	return err
 }
 
 func execute(strs ...string) (string, error) {

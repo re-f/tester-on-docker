@@ -28,7 +28,7 @@ func getCrossCompileCmd(pkName, os, arch string, isPrepare bool) []string {
 		"CGO_ENABLED=0",
 		fmt.Sprintf("GOOS=%v", os),
 		fmt.Sprintf("GOARCH=%v", arch),
-		"go", "test", "-c", "-tags", "inner prepare", pkName,
+		"go", "test", "-c", "-tags", "container prepare", pkName,
 	}
 	return cmds
 }

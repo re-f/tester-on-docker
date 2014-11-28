@@ -22,7 +22,7 @@ func loadConfig() error {
 	if nil != err {
 		return fmt.Errorf("Load config error: %v", err.Error())
 	}
-	debugLog("config at %v", filePath)
+	debugLog("[config] at %v", filePath)
 	return nil
 }
 

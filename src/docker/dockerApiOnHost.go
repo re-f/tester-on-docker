@@ -1,42 +1,37 @@
-// +build !inner
+// +build !container
 
 package docker
 
 import (
 	"fmt"
 	"path/filepath"
-	"reflect"
 	"runtime"
 	"strings"
 	"testing"
 )
 
 func RunTestCaseDefault(t *testing.T, tc func()) {
-	pkName, funcName, err := getFuncInfo(skip + 1)
-	if nil != err {
-		t.Fatalf(err.Error())
-	}
 	runTestCase(t, nil, 1, false)
 }
 
 func RunTestCase(t *testing.T, tc func(), image *Image) {
-	pkName, funcName, err := getFuncInfo(skip + 1)
-	if nil != err {
-		t.Fatalf(err.Error())
-	}
 	runTestCase(t, image, 1, false)
 }
 
-func Prepare(t *testing.T, tc func(), image *Image) {
-	cid := runTestCase(t, tc, image, 1, true)
-	err := removeContainer(cid)
-	if nil != err {
+func Prepare(t *testing.T, tc func(), image *Image, forceNew bool) {
+	cid := runTestCase(t, nil, 1, true)
+
+	if err := buildImage(cid, image); nil != err {
+		t.Fatalf("Prepare error: %v", err.Error())
+	}
+
+	if err := removeContainer(cid); nil != err {
 		t.Fatalf("Prepare error: %v", err.Error())
 	}
 
 }
 
-func runTestCase(t *testing.T, pkName, funcName string, image *Image, skip int, isPrepare bool) string {
+func runTestCase(t *testing.T, image *Image, skip int, isPrepare bool) string {
 	err := loadConfig()
 	if nil != err {
 		t.Fatalf(err.Error())
@@ -44,7 +39,10 @@ func runTestCase(t *testing.T, pkName, funcName string, image *Image, skip int, 
 	if nil == image {
 		image = getImage()
 	}
-
+	pkName, funcName, err := getFuncInfo(skip + 1)
+	if nil != err {
+		t.Fatalf(err.Error())
+	}
 	err = compileInnerTestCase(pkName, *image, isPrepare)
 	if nil != err {
 		t.Fatalf("complie tc error: " + err.Error())

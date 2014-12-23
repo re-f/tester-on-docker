@@ -87,3 +87,16 @@ func getImage() image {
 	ins.arch = getString("image", "arch")
 	return ins
 }
+
+func getSudo() string {
+	isSudo, err := config.GetBool("global", "sudo")
+	if nil != err {
+		return ""
+	}
+
+	if isSudo {
+		return "sudo"
+	} else {
+		return ""
+	}
+}

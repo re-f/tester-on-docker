@@ -39,7 +39,7 @@ func runContainer(funcName, pkName string, im image, verbose, isRemove, isPrepar
 	if isPrepare {
 		isRemove = false
 		cidfilePath := filepath.ToSlash(filepath.Join(workDir, containerName))
-		runContainerCmd = fmt.Sprintf("sudo docker run --name=%v --cidfile=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$", containerName, cidfilePath, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
+		runContainerCmd = fmt.Sprintf("docker run --name=%v --cidfile=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$ ", containerName, cidfilePath, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
 		debugLog("[run docker container]%v", runContainerCmd)
 		prepareOutput, err := executeOnDocker(runContainerCmd)
 		if nil != err {

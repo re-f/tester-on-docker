@@ -3,12 +3,13 @@
 package docker
 
 import (
+	"fmt"
 	"os/exec"
 	"strings"
 )
 
 func executeOnDocker(str string) (string, error) {
-	return execute(str)
+	return execute(fmt.Sprintf("%v %v", str))
 }
 
 func newCmd(cmd string) *exec.Cmd {

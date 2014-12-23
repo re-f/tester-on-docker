@@ -9,8 +9,8 @@ import (
 func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 	tc(t)
 }
-func RunTestCaseWithPrepare(t *testing.T, imageName string, tc func(t *testing.T)) {
+func RunTestCaseWithPrepare(t *testing.T, funcName string, tc func(t *testing.T)) {
 	tc(t)
 }
-func Prepare(t *testing.T, funcName string, forceNew bool) {
+func prepare(t *testing.T, funcName string) {
 }

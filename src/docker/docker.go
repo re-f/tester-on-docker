@@ -27,7 +27,7 @@ func runContainer(funcName, pkName string, im image, verbose, isRemove, isPrepar
 		test file path :	/docker/path/src/pkpath
 	*/
 	if !strings.HasPrefix(getAbs(), getHostPath()) {
-		return "", "", fmt.Errorf("must under host path to run test")
+		return "", "", fmt.Errorf("current path (%v) must under host path (%v)", getAbs(), getHostPath())
 	}
 
 	workDir := strings.Replace(getAbs(), getHostPath(), getBoot2DockerPath(), 1)
@@ -47,17 +47,21 @@ func runContainer(funcName, pkName string, im image, verbose, isRemove, isPrepar
 		}
 		// get cid
 		output, err := executeOnDocker(fmt.Sprintf("cat %v", cidfilePath))
-		if nil != err {
-			return output, prepareOutput, err
-		} else {
-			return output, prepareOutput, err
-		}
+		return output, prepareOutput, err
 	} else {
-		runContainerCmd = fmt.Sprintf("sudo docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$", containerName, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
+		runContainerCmd = fmt.Sprintf("docker run --name=%v -a stdout -i -t --rm=%v -v %v:%v -w %v %v %v -test.v=%v -test.run=^%v$ ", containerName, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
 		debugLog("[Info]%v", runContainerCmd)
 		output, err := executeOnDocker(runContainerCmd)
 		return "", output, err
 	}
+}
+
+func containerOutput(output string) string {
+	lines := strings.Split(output, "\n")
+	for i, _ := range lines {
+		lines[i] = ">> " + lines[i]
+	}
+	return strings.Join(lines, "\n")
 }
 
 func getAbs() string {

@@ -11,6 +11,7 @@ debug	=  #true/false
 os		= linux
 arch	= amd64
 name	= ts:base
+rebuild = false
 
 [path]
 host	= G:\Virtual Box\

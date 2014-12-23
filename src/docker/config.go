@@ -2,10 +2,11 @@ package docker
 
 import (
 	"fmt"
-	"github.com/ungerik/go-dry/dry"
 	"goconf/conf"
 	"os"
 	"path/filepath"
+
+	"github.com/ungerik/go-dry/dry"
 )
 
 var (
@@ -69,6 +70,10 @@ func getBoot2DockerPath() string {
 func isDebug() bool {
 	isDebug, _ := config.GetBool("global", "debug")
 	return isDebug
+}
+func isRebuild() bool {
+	rebuild, _ := config.GetBool("image", "rebuild")
+	return rebuild
 }
 func getSections() []string {
 	return config.GetSections()

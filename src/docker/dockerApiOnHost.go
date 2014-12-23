@@ -20,8 +20,9 @@ func RunTestCase(t *testing.T, tc func(t *testing.T)) {
 	runTestCase(t, "", "", 1, false)
 }
 
-func RunTestCaseWithPrepare(t *testing.T, tagName string, tc func(t *testing.T)) {
-	runTestCase(t, "", repository+":"+tagName, 1, false)
+func RunTestCaseWithPrepare(t *testing.T, funcName string, tc func(t *testing.T)) {
+	prepare(t, funcName)
+	runTestCase(t, "", repository+":"+funcName, 1, false)
 }
 
 func getFuncInfo(skip int) (pkname, funcName string, err error) {
@@ -58,28 +59,29 @@ func runTestCase(t *testing.T, funcName, imageName string, skip int, isPrepare b
 
 	// run tc
 	cid, output, err := runContainer(funcName, filepath.Base(pkName), im, testing.Verbose(), !isDebug(), isPrepare)
+	fmt.Println(output)
 	if nil != err {
 		t.Fatalf("run container error: %v", err.Error())
 	}
-	fmt.Println(output)
 
 	return cid
 }
 
-func Prepare(t *testing.T, funcName string, forceNew bool) {
+func prepare(t *testing.T, funcName string) {
 	cid := ""
 	isExist := isImageExist(repository, funcName)
-	debugLog("[Info]prepare image exist: %v, force to build new image: %v", isExist, forceNew)
+	rebuild := isRebuild()
+	debugLog("[Info]prepare image exist: %v, force to build new image: %v", isExist, rebuild)
 	if !isExist {
-		forceNew = true
+		rebuild = true
 	}
-	if forceNew {
+	if rebuild {
 		// @todo remove all containers base on this image
 		if err := removeImage(repository + ":" + funcName); nil != err {
 			debugLog("[Warning] remove old imgae error: %v", err.Error())
 		}
 
-		cid = runTestCase(t, funcName, "", 1, true)
+		cid = runTestCase(t, funcName, "", 2, true)
 		if err := buildImage(cid, funcName); nil != err {
 			t.Fatalf("Prepare error: %v", err.Error())
 		}
@@ -88,5 +90,4 @@ func Prepare(t *testing.T, funcName string, forceNew bool) {
 	if err := removeContainer(cid); nil != err {
 		debugLog("[Warning]Prepare: remove prepare container error: %v", err.Error())
 	}
-
 }

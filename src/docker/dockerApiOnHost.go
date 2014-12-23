@@ -59,7 +59,7 @@ func runTestCase(t *testing.T, funcName, imageName string, skip int, isPrepare b
 
 	// run tc
 	cid, output, err := runContainer(funcName, filepath.Base(pkName), im, testing.Verbose(), !isDebug(), isPrepare)
-	fmt.Println(output)
+	fmt.Println(containerOutput(output))
 	if nil != err {
 		t.Fatalf("run container error: %v", err.Error())
 	}

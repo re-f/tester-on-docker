@@ -4,18 +4,13 @@ tester-on-docer
 轻量级golang docker单元测试框架
 
 ## 说明
-在docker下执行golang单元测试,支持go test 的-test.v和test.run参数
+在docker下执行golang单元测试,还有prepare
 
 ## 示例
 
-```Go
-func TestDemo(t *testing.T) {
-	docker.RunTestCase(t, func(t *testing.T) {
-		fmt.Println("Your unit test case")
-	})
-}
-```
 
+[windows_demo](doc/readme_windows.md)
+[linux_demo](doc/readme_windows.md)
 
 
 ### 配置说明
@@ -39,9 +34,9 @@ func TestDemo(t *testing.T) {
 	boot2docker	= 
 
 ## 要求
-- docker
+- docker:
+	windows 和OS X下docker 1.3+ 
 - go 1.3+
 - 宿主机可交叉编译
 
-## 限制
-暂时不支持benchmark
+## todo

@@ -11,7 +11,7 @@
  windows版docker1.3默认将c:/Users 在boot2docker上映射到  /c/Users目录下，无法修改其他目录,如果需要自定义映射目录解决方式参照：[boot2docker together with VirtualBox Guest Additions](https://medium.com/boot2docker-lightweight-linux-for-docker/boot2docker-together-with-virtualbox-guest-additions-da1e3ab2465c)
 
 ### 配置环境
-- 安装配置golang，
+- 安装golang，正确设置环境变量（GOROOT，GOPATH，PATH）
 - 配置golang交叉编译
 安装mingw([参考](https://github.com/golang/go/wiki/WindowsBuild))
 在命令行中执行：
@@ -38,4 +38,5 @@
 
 ###运行测试
 - 在映射目录下执行go test docker
+
   __注意：测试的运行目录必须在映射目录下__

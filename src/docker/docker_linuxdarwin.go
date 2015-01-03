@@ -9,7 +9,7 @@ import (
 )
 
 func executeOnDocker(str string) (string, error) {
-	return execute(fmt.Sprintf("%v %v", str))
+	return execute(fmt.Sprintf("%v %v", getSudo(), str))
 }
 
 func newCmd(cmd string) *exec.Cmd {

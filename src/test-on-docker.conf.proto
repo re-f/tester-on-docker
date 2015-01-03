@@ -6,7 +6,7 @@ port	= 22
 
 [global]
 debug	=  #true/false
-
+sudo 	= #true/false
 [image]
 os		= linux
 arch	= amd64

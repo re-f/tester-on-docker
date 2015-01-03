@@ -10,6 +10,7 @@ tester-on-docer
 
 
 [windows_demo](doc/readme_windows.md)
+
 [linux_demo](doc/readme_windows.md)
 
 
@@ -21,15 +22,16 @@ tester-on-docer
 	ip		=
 	port	=
 
-	[global]	# 是否开启debug功能,可省略,不可为空
-	debug	=  #true/false
+	[global]	
+	debug	=  # 是否开启debug
+	sudo 	=  # 是否使用sudo
 
 	[image] 	# 测试使用的docker image及image信息,os和arch填写参照golang交叉编译的GOOS和GOARCH变量
 	os		= 
 	arch	= 
 	name	= #格式 REPOSITORY:TAG
 
-	[path] 		# 如果宿主机是Windows和OS X,则两个值分别为宿主机和boot2docker文件夹映射路径,要求先配置;如果宿主机是Linux,则两个路径要求一致	
+	[path] 		# 如果宿主机是Windows和OS X,则两个值分别为宿主机和boot2docker文件夹映射路径;如果宿主机是Linux,则两个路径要求一致	
 	host	= # 测试执行路径和配置文件必须在该路径或该路径的子目录下
 	boot2docker	= 
 
@@ -38,5 +40,3 @@ tester-on-docer
 	windows 和OS X下docker 1.3+ 
 - go 1.3+
 - 宿主机可交叉编译
-
-## todo

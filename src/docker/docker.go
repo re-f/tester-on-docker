@@ -3,10 +3,11 @@ package docker
 import (
 	"bytes"
 	"fmt"
-	"github.com/ungerik/go-dry/dry"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/ungerik/go-dry/dry"
 )
 
 type image struct {
@@ -39,7 +40,7 @@ func runContainer(funcName, pkName string, im image, verbose, isRemove, isPrepar
 	if isPrepare {
 		isRemove = false
 		cidfilePath := filepath.ToSlash(filepath.Join(workDir, containerName))
-		runContainerCmd = fmt.Sprintf("docker run --name=%v --cidfile=%v -a stdout -i -t --rm=%v -v %v:%v:o -w %v %v %v -test.v=%v -test.run=^%v$ ", containerName, cidfilePath, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
+		runContainerCmd = fmt.Sprintf("docker run --name=%v --cidfile=%v -a stdout -i -t --rm=%v -v %v:%v -w %v %v %v -test.v=%v -test.run=^%v$ ", containerName, cidfilePath, isRemove, getBoot2DockerPath(), getBoot2DockerPath(), workDir, im.name, testFilePath, verbose, funcName)
 		debugLog("[run docker container]%v", runContainerCmd)
 		prepareOutput, err := executeOnDocker(runContainerCmd)
 		if nil != err {
@@ -96,6 +97,11 @@ func execute(strs string) (string, error) {
 }
 
 func removeContainer(cid string) error {
+	// stop container
+	stopCmd := fmt.Sprintf("docker stop %v", cid)
+	executeOnDocker(stopCmd)
+
+	// remove container
 	rmCmd := fmt.Sprintf("docker rm %v", cid)
 	output, err := executeOnDocker(rmCmd)
 	if nil != err {
@@ -104,10 +110,23 @@ func removeContainer(cid string) error {
 	return nil
 }
 
-func removeImage(name string) error {
-	rmCmd := fmt.Sprintf("docker rmi %v", name)
-	output, err := executeOnDocker(rmCmd)
+/*
+	remove image while stop & remove all containers build by this image
+*/
+func removeImage(repo, tag string) error {
+	// get all containers build by given image
+	output, err := executeOnDocker(fmt.Sprintf("docker ps -a| awk '{if ($2 == \"%v:%v\") print $1;}'", repo, tag))
 	if nil != err {
+		return err
+	}
+
+	// remove containers
+	for _, cid := range strings.Split(strings.TrimSpace(output), "\n") {
+		debugLog("remove container %v ,return (%v)", cid, removeContainer(strings.TrimSpace(cid)))
+	}
+
+	// remove image
+	if output, err := executeOnDocker(fmt.Sprintf("docker rmi %v:%v", repo, tag)); nil != err {
 		return fmt.Errorf("remove container error: %v, output: %v", err.Error(), output)
 	}
 	return nil

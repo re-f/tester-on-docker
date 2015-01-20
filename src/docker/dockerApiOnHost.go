@@ -70,14 +70,13 @@ func runTestCase(t *testing.T, funcName, imageName string, skip int, isPrepare b
 func prepare(t *testing.T, funcName string) {
 	cid := ""
 	isExist := isImageExist(repository, funcName)
-	rebuild := isRebuild()
-	debugLog("[Info]prepare image exist: %v, force to build new image: %v", isExist, rebuild)
+	isBuild := isRebuild()
+	debugLog("[Info]prepare image exist: %v, force to build new image: %v", isExist, isBuild)
 	if !isExist {
-		rebuild = true
+		isBuild = true
 	}
-	if rebuild {
-		// @todo remove all containers base on this image
-		if err := removeImage(repository + ":" + funcName); nil != err {
+	if isBuild {
+		if err := removeImage(repository, funcName); nil != err {
 			debugLog("[Warning] remove old imgae error: %v", err.Error())
 		}
 

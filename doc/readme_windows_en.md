@@ -1,25 +1,27 @@
 ## Prepare
-### Install docker
-- Download:
+#### Install Virtual Box
+- Download: [Downloads](https://www.virtualbox.org/wiki/Downloads)
+- Install
 
-	 [Download](https://github.com/boot2docker/windows-installer/releases/tag/v1.3.2)
-- Install:
-	
-	[Officials Doc](https://docs.docker.com/installation/windows/)
+#### Install docker
+- Download: [Downloads](https://github.com/boot2docker/windows-installer/releases/tag/v1.3.2)
 
-- Shared folder:
- The first of the following share names that exists (if any) will be automatically mounted at the location specified:
+- Install: [Official Doc](https://docs.docker.com/installation/windows/)
 
-        Users share at /Users
-        /Users share at /Users
-        c/Users share at /c/Users
-        /c/Users share at /c/Users
-        c:/Users share at /c/Users
+#### Environment
+- Install golang and set environmental variables 
 
-Customize shard folder reference: [boot2docker together with VirtualBox Guest Additions](https://medium.com/boot2docker-lightweight-linux-for-docker/boot2docker-together-with-virtualbox-guest-additions-da1e3ab2465c)
+    GOROOT=#your golang installed path
 
-### Environment
-- Install golang and set environmental variables (GOROOT，GOPATH，PATH)
+    GOPATH=c:/users/tester-on-docker/
+    
+    PATH=%PATH%;%GOROOT%/bin
+
+**attention：c:/users is boot2docker default share folder，if you change it GAPATH value is %share folder%/tester-on-docker**
+
+
+[golang 安装参考](http://golang.org/doc/install#windows)
+
 - Cross comilation
 Install mingw([reference](https://github.com/golang/go/wiki/WindowsBuild))
 execute in cmd :
@@ -30,26 +32,28 @@ execute in cmd :
 	cd %GOROOT%/src
 	make.bat
 ```
-[cross compilation reference](https://code.google.com/p/go-wiki/wiki/WindowsCrossCompiling)
+[Cross compilation reference](https://code.google.com/p/go-wiki/wiki/WindowsCrossCompiling)
 
 ## Run test
-### start boot2docker
+
+#### Deployment
+copy tester-on-docker director to boot2docker share folder(default folder is c:/users)    
+ 
+#### start boot2docker & get boot2docker ip
 execute on git bash
+
 ```bash
+    $ boot2docker init    #initiate boot2docker
     $ boot2docker start   #start boot2docker
     $ boot2docker ip      #show boot2docker ip addresss
 ```
 
-###config file
-- copy test-on-docker_windows.conf to shared folder and rename to test-on-docker.conf
-- update test-on-docker.conf，set ssh.ip value boot2docker ip地址
+####config file
+update tester-on-docker/src/windows_demo/test-on-docker.conf，set ssh.ip to boot2docker ip address
 
-###run test
+####run test
 execute on cmd
-
 ```bash
-    cd c:/users #enter into shard folder
-    go test docker
+    cd c:/users/tester-on-docker/src/windows_demo
+    go test -test.timeout=20m docker
 ```
-
-  __ATTENTION:Must run test under shard folder__

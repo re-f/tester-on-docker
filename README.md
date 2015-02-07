@@ -1,10 +1,10 @@
 tester-on-docer
 ===============
 
-轻量级golang docker单元测试框架
+轻量级高隔离性跨平台golang 单元测试框架
 
 ## 说明
-在docker下执行golang单元测试,还有prepare
+利用docker，隔离执行golang的单元测试 
 
 ## 示例
 
@@ -30,6 +30,7 @@ tester-on-docer
 	os		= 
 	arch	= 
 	name	= #格式 REPOSITORY:TAG
+	rebuild = # 值为true/false ,!如果值设置为true,将删除相关container
 
 	[path] 		# 如果宿主机是Windows和OS X,则两个值分别为宿主机和boot2docker文件夹映射路径;如果宿主机是Linux,则两个路径要求一致	
 	host	= # 测试执行路径和配置文件必须在该路径或该路径的子目录下

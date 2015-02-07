@@ -49,7 +49,7 @@
 - 修改tester-on-docker/src/windows_demo/test-on-docker.conf 文件，将ssh.ip改为boot2docker ip地址
 
 ####运行测试
-- 在tester-on-docker/src/windows_demo/目录下执行
+- 在tester-on-docker/src/demo/windows目录下执行
    
 ```
     go test -test.timeout=20m

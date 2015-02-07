@@ -54,6 +54,6 @@ update tester-on-docker/src/windows_demo/test-on-docker.conf，set ssh.ip to boo
 ####run test
 execute on cmd
 ```bash
-    cd c:/users/tester-on-docker/src/windows_demo
+    cd c:/users/tester-on-docker/src/demo/windows
     go test -test.timeout=20m docker
 ```

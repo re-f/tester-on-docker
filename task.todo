@@ -1,4 +1,11 @@
 架构:
   ☐ 创建多个container，container之间互联
+  ☐ 
 
  ☐ 使用密钥文件链接boot2docker
+ ☐ 支持跨包prepare
+ ☐ 支持递归prepare(eg: TestT2中Prepare(T1)， TestT3中Prepare(T2);运行TestT3到Prepare(T2)时会执行Prepare(T1))
+ ☐ 使用管段方式处理container输出
+   目前处理方式：将输出放到内存中，然后按行拆分返回，如果日志太大，可能内存不足
+ ☐ 支持条件编译
+   在配置文件中写编译条件

@@ -4,10 +4,11 @@ package docker
 
 import (
 	"bytes"
-	"code.google.com/p/go.crypto/ssh"
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"code.google.com/p/go.crypto/ssh"
 )
 
 type Ssh struct {
@@ -37,7 +38,8 @@ func executeOnDocker(cmd string) (string, error) {
 	var output bytes.Buffer
 	session.Stderr = &output
 	session.Stdout = &output
-	err = session.Run(cmd)
+
+	err = session.Run(fmt.Sprintf("%v %v", getSudo(), cmd))
 	return output.String(), err
 }
 

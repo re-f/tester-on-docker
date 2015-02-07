@@ -2,10 +2,11 @@ package docker
 
 import (
 	"fmt"
-	"github.com/ungerik/go-dry/dry"
 	"goconf/conf"
 	"os"
 	"path/filepath"
+
+	"github.com/ungerik/go-dry/dry"
 )
 
 var (
@@ -70,6 +71,10 @@ func isDebug() bool {
 	isDebug, _ := config.GetBool("global", "debug")
 	return isDebug
 }
+func isRebuild() bool {
+	rebuild, _ := config.GetBool("image", "rebuild")
+	return rebuild
+}
 func getSections() []string {
 	return config.GetSections()
 
@@ -81,4 +86,17 @@ func getImage() image {
 	ins.os = getString("image", "os")
 	ins.arch = getString("image", "arch")
 	return ins
+}
+
+func getSudo() string {
+	isSudo, err := config.GetBool("global", "sudo")
+	if nil != err {
+		return ""
+	}
+
+	if isSudo {
+		return "sudo"
+	} else {
+		return ""
+	}
 }

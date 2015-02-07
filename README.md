@@ -1,21 +1,17 @@
 tester-on-docer
 ===============
 
-轻量级golang docker单元测试框架
+轻量级高隔离性跨平台golang 单元测试框架
 
 ## 说明
-在docker下执行golang单元测试,支持go test 的-test.v和test.run参数
+利用docker，隔离执行golang的单元测试 
 
 ## 示例
 
-```Go
-func TestDemo(t *testing.T) {
-	docker.RunTestCase(t, func(t *testing.T) {
-		fmt.Println("Your unit test case")
-	})
-}
-```
 
+[windows_demo](doc/readme_windows.md)
+
+[linux_demo](doc/readme_windows.md)
 
 
 ### 配置说明
@@ -26,22 +22,22 @@ func TestDemo(t *testing.T) {
 	ip		=
 	port	=
 
-	[global]	# 是否开启debug功能,可省略,不可为空
-	debug	=  #true/false
+	[global]	
+	debug	=  # 是否开启debug
+	sudo 	=  # 是否使用sudo
 
 	[image] 	# 测试使用的docker image及image信息,os和arch填写参照golang交叉编译的GOOS和GOARCH变量
 	os		= 
 	arch	= 
 	name	= #格式 REPOSITORY:TAG
+	rebuild = # 值为true/false ,!如果值设置为true,将删除相关container
 
-	[path] 		# 如果宿主机是Windows和OS X,则两个值分别为宿主机和boot2docker文件夹映射路径,要求先配置;如果宿主机是Linux,则两个路径要求一致	
+	[path] 		# 如果宿主机是Windows和OS X,则两个值分别为宿主机和boot2docker文件夹映射路径;如果宿主机是Linux,则两个路径要求一致	
 	host	= # 测试执行路径和配置文件必须在该路径或该路径的子目录下
 	boot2docker	= 
 
 ## 要求
-- docker
+- docker:
+	windows 和OS X下docker 1.3+ 
 - go 1.3+
 - 宿主机可交叉编译
-
-## 限制
-暂时不支持benchmark
